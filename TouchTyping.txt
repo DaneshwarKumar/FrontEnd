@@ -1,0 +1,83 @@
+import React, { useState, useEffect } from 'react';
+
+const TouchTypingApp = () => {
+  const [text, setText] = useState('');
+  const [currentCharacterIndex, setCurrentCharacterIndex] = useState(0);
+  const [isTypingStarted, setIsTypingStarted] = useState(false);
+  const [startTime, setStartTime] = useState(null);
+  const [endTime, setEndTime] = useState(null);
+
+  const textToType = 'The quick brown fox jumps over the lazy dog.';
+  
+  useEffect(() => {
+    if (isTypingStarted) {
+      setStartTime(Date.now());
+    } else {
+      setEndTime(null);
+    }
+  }, [isTypingStarted]);
+
+  const handleTyping = (event) => {
+    const typedText = event.target.value;
+    setText(typedText);
+
+    if (typedText.length === 1) {
+      setIsTypingStarted(true);
+    }
+
+    if (typedText.length === textToType.length) {
+      setIsTypingStarted(false);
+      setEndTime(Date.now());
+    }
+  };
+
+  const renderTextToType = () => {
+    return (
+      <div>
+        <p>{textToType}</p>
+      </div>
+    );
+  };
+
+  const renderTypingArea = () => {
+    return (
+      <div>
+        <textarea
+          value={text}
+          onChange={handleTyping}
+          placeholder="Start typing..."
+        />
+      </div>
+    );
+  };
+
+  const calculateTypingSpeed = () => {
+    if (startTime && endTime) {
+      const timeElapsedInSeconds = (endTime - startTime) / 1000;
+      const wordsTyped = textToType.split(' ').length;
+      const typingSpeed = Math.floor(wordsTyped / timeElapsedInSeconds) * 60;
+      return typingSpeed;
+    }
+    return 0;
+  };
+
+  const renderStats = () => {
+    const typingSpeed = calculateTypingSpeed();
+    return (
+      <div>
+        <p>Typing speed: {typingSpeed} WPM</p>
+      </div>
+    );
+  };
+
+  return (
+    <div>
+      <h1>Touch Typing App</h1>
+      {renderTextToType()}
+      {renderTypingArea()}
+      {renderStats()}
+    </div>
+  );
+};
+
+export default TouchTypingApp;
